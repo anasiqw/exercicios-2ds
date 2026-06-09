@@ -26,3 +26,8 @@ Responda:
 3. Como essa ideia poderia ser testada rapidamente?
 
 Crie sua resposta abaixo:
+1. O problema é que a biblioteca da escola tem poucos livros atualizados.
+
+2. Criar uma caixa de sugestões para os alunos indicarem livros que gostariam de ler.
+
+3. Colocar a caixa de sugestões por duas semanas e analisar os pedidos dos alunos.
