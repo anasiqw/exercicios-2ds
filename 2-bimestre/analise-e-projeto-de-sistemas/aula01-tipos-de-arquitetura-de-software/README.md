@@ -132,3 +132,8 @@ Associe:
 3. Site escolar com vários usuários
 
 Crie sua resposta abaixo:
+1. Sistema pequeno de biblioteca → Arquitetura Monolítica.
+
+2. Loja online nacional → Arquitetura de Microsserviços.
+
+3. Site escolar com vários usuários → Arquitetura Cliente-Servidor.
