@@ -17,6 +17,8 @@
       --green-dark: #1d4633;
       --lime: #d8ef8b;
       --orange: #c95836;
+      --danger: #b42318;
+      --danger-soft: #fff0ee;
       --gold: #e8b34f;
       --shadow: 0 18px 48px rgb(32 41 31 / 9%);
       font-family: Georgia, "Times New Roman", serif;
@@ -132,6 +134,23 @@
       font-size: 17px;
       line-height: 1.55;
     }
+
+    .journey-button {
+      min-height: 44px;
+      margin-top: 24px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 5px;
+      background: var(--lime);
+      color: var(--green-dark);
+      cursor: pointer;
+      font: 700 14px Arial, sans-serif;
+    }
+
+    .journey-button:hover { background: #e7f7b9; }
+    .journey-button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+    .journey-button:disabled { cursor: default; opacity: 0.8; }
+    .journey-status { min-height: 18px; margin: 12px 0 0; color: #e2eade; font: 12px/1.5 Arial, sans-serif; }
 
     .survey, .results {
       border: 1px solid var(--line);
@@ -277,6 +296,32 @@
     .formula { margin: 0; color: var(--muted); font: 12px Arial, sans-serif; }
     .clear-button { padding: 6px 0; border: 0; background: transparent; color: var(--orange); cursor: pointer; font: 700 12px Arial, sans-serif; }
 
+    .funnel-copy { margin: 10px 0 0; color: var(--muted); font: 13px/1.5 Arial, sans-serif; }
+
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      padding-top: 20px;
+    }
+
+    .funnel-step {
+      min-width: 0;
+      min-height: 118px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #f8f8f2;
+    }
+
+    .funnel-step.largest-drop { border-color: var(--danger); background: var(--danger-soft); }
+    .funnel-name, .funnel-conversion { display: block; font-family: Arial, sans-serif; }
+    .funnel-name { color: var(--muted); font-size: 12px; }
+    .funnel-count { display: block; margin: 10px 0; font-size: 32px; line-height: 1; }
+    .funnel-conversion { color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .largest-drop .funnel-name, .largest-drop .funnel-conversion { color: var(--danger); font-weight: 700; }
+    .drop-message { min-height: 18px; margin: 14px 0 0; color: var(--danger); font: 700 13px Arial, sans-serif; }
+
     @keyframes arrive {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -292,6 +337,7 @@
       .results { grid-column: auto; padding: 22px 20px; }
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .metric { min-height: 96px; }
+      .funnel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -311,6 +357,8 @@
         <p class="eyebrow">Troca de livros</p>
         <h1 id="app-title">Uma boa história merece circular.</h1>
         <p class="description">Encontre leitores por perto, troque livros que já leu e descubra sua próxima história favorita.</p>
+        <button class="journey-button" id="journey-button" type="button">Experimentar</button>
+        <p class="journey-status" id="journey-status" role="status" aria-live="polite">Explore o app para começar.</p>
       </section>
 
       <section class="survey" aria-labelledby="survey-title">
@@ -326,6 +374,22 @@
         <p class="status-message" id="status-message" role="status" aria-live="polite"></p>
       </section>
 
+      <section class="results" aria-labelledby="funnel-title">
+        <div class="results-heading">
+          <h2 id="funnel-title">Funil AARRR</h2>
+          <span class="total-count">Etapas da experiência</span>
+        </div>
+        <p class="funnel-copy">A conversão mostra quantas pessoas avançaram em relação à etapa anterior.</p>
+        <div class="funnel-grid" id="funnel-grid">
+          <div class="funnel-step" data-funnel-step="acquisition"><span class="funnel-name">Aquisição</span><strong class="funnel-count" id="count-acquisition">0</strong><span class="funnel-conversion" id="conversion-acquisition">Entrada do funil</span></div>
+          <div class="funnel-step" data-funnel-step="activation"><span class="funnel-name">Ativação</span><strong class="funnel-count" id="count-activation">0</strong><span class="funnel-conversion" id="conversion-activation">— conversão</span></div>
+          <div class="funnel-step" data-funnel-step="retention"><span class="funnel-name">Retenção</span><strong class="funnel-count" id="count-retention">0</strong><span class="funnel-conversion" id="conversion-retention">— conversão</span></div>
+          <div class="funnel-step" data-funnel-step="revenue"><span class="funnel-name">Receita</span><strong class="funnel-count" id="count-revenue">0</strong><span class="funnel-conversion" id="conversion-revenue">— conversão</span></div>
+          <div class="funnel-step" data-funnel-step="recommendation"><span class="funnel-name">Recomendação</span><strong class="funnel-count" id="count-recommendation">0</strong><span class="funnel-conversion" id="conversion-recommendation">— conversão</span></div>
+        </div>
+        <p class="drop-message" id="drop-message" aria-live="polite">Ainda não há dados suficientes para encontrar uma queda.</p>
+      </section>
+
       <section class="results" aria-labelledby="results-title">
         <div class="results-heading">
           <h2 id="results-title">Resultado da turma</h2>
@@ -339,7 +403,7 @@
         </div>
         <div class="results-footer">
           <p class="formula">NPS = % de promotores − % de detratores</p>
-          <button class="clear-button" id="clear-button" type="button">Limpar respostas</button>
+          <button class="clear-button" id="clear-button" type="button">Limpar dados</button>
         </div>
       </section>
     </main>
@@ -347,9 +411,47 @@
 
   <script>
     const STORAGE_KEY = "estante-nps-respostas";
+    const FUNNEL_STORAGE_KEY = "estante-aarrr-funil";
+    const VISIT_STAGE_KEY = "estante-aarrr-etapa";
+    const FUNNEL_STAGES = [
+      { key: "acquisition", label: "Aquisição" },
+      { key: "activation", label: "Ativação" },
+      { key: "retention", label: "Retenção" },
+      { key: "revenue", label: "Receita" },
+      { key: "recommendation", label: "Recomendação" }
+    ];
     const form = document.querySelector("#survey-form");
     const ratingList = document.querySelector(".rating-list");
     const statusMessage = document.querySelector("#status-message");
+    const journeyButton = document.querySelector("#journey-button");
+    const journeyStatus = document.querySelector("#journey-status");
+
+    function readFunnel() {
+      const emptyFunnel = Object.fromEntries(FUNNEL_STAGES.map(({ key }) => [key, 0]));
+      try {
+        const saved = JSON.parse(localStorage.getItem(FUNNEL_STORAGE_KEY) || "{}");
+        return Object.fromEntries(FUNNEL_STAGES.map(({ key }) => [
+          key,
+          Number.isInteger(saved[key]) && saved[key] >= 0 ? saved[key] : emptyFunnel[key]
+        ]));
+      } catch {
+        return emptyFunnel;
+      }
+    }
+
+    function saveFunnel(funnel) {
+      localStorage.setItem(FUNNEL_STORAGE_KEY, JSON.stringify(funnel));
+    }
+
+    const savedStage = sessionStorage.getItem(VISIT_STAGE_KEY);
+    let currentStage = savedStage === null ? null : Number(savedStage);
+    if (!Number.isInteger(currentStage) || currentStage < 0 || currentStage > 4) {
+      currentStage = 0;
+      sessionStorage.setItem(VISIT_STAGE_KEY, String(currentStage));
+      const funnel = readFunnel();
+      funnel.acquisition += 1;
+      saveFunnel(funnel);
+    }
 
     for (let score = 0; score <= 10; score += 1) {
       const option = document.createElement("div");
@@ -383,6 +485,74 @@
       document.querySelector("#total-count").textContent = `${responses.length} ${responses.length === 1 ? "resposta" : "respostas"}`;
     }
 
+    function renderJourney() {
+      const labels = ["Experimentar", "Quero usar de novo", "Eu pagaria por isso", "Escolher nota 9 ou 10", "Recomendação registrada"];
+      journeyButton.textContent = labels[currentStage];
+      journeyButton.disabled = currentStage === 4;
+
+      const messages = [
+        "Explore o app para começar.",
+        "Primeira experiência registrada. Você voltaria a usar?",
+        "Retorno registrado. Agora imagine que este app fosse pago.",
+        "Receita registrada. Dê uma nota 9 ou 10 para recomendar.",
+        "Obrigado por completar o funil!"
+      ];
+      journeyStatus.textContent = messages[currentStage];
+    }
+
+    function renderFunnel() {
+      const funnel = readFunnel();
+      const drops = [];
+
+      FUNNEL_STAGES.forEach(({ key }, index) => {
+        const count = funnel[key];
+        document.querySelector(`#count-${key}`).textContent = count;
+        const step = document.querySelector(`[data-funnel-step="${key}"]`);
+        step.classList.remove("largest-drop");
+
+        if (index === 0) return;
+        const previous = FUNNEL_STAGES[index - 1];
+        const previousCount = funnel[previous.key];
+        const conversion = previousCount ? (count / previousCount) * 100 : null;
+        document.querySelector(`#conversion-${key}`).textContent = conversion === null
+          ? "— sem etapa anterior"
+          : `${Math.round(conversion)}% de conversão`;
+
+        if (conversion !== null && conversion < 100) {
+          drops.push({ key, previous, percentage: 100 - conversion });
+        }
+      });
+
+      drops.sort((first, second) => second.percentage - first.percentage);
+      const largestDrop = drops[0];
+      const dropMessage = document.querySelector("#drop-message");
+      if (largestDrop) {
+        document.querySelector(`[data-funnel-step="${largestDrop.key}"]`).classList.add("largest-drop");
+        const current = FUNNEL_STAGES.find(({ key }) => key === largestDrop.key);
+        dropMessage.textContent = `Maior queda: ${largestDrop.previous.label} → ${current.label} (${Math.round(largestDrop.percentage)}%).`;
+      } else {
+        dropMessage.textContent = "Ainda não há queda entre as etapas do funil.";
+      }
+    }
+
+    journeyButton.addEventListener("click", () => {
+      if (currentStage < 3) {
+        const nextStage = FUNNEL_STAGES[currentStage + 1].key;
+        const funnel = readFunnel();
+        funnel[nextStage] += 1;
+        saveFunnel(funnel);
+        currentStage += 1;
+        sessionStorage.setItem(VISIT_STAGE_KEY, String(currentStage));
+        renderJourney();
+        renderFunnel();
+        return;
+      }
+
+      document.querySelector("#score-9").focus();
+      document.querySelector(".survey").scrollIntoView({ behavior: "smooth", block: "center" });
+      statusMessage.textContent = "Escolha 9 ou 10 para registrar uma recomendação no funil.";
+    });
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const selected = form.querySelector('input[name="score"]:checked');
@@ -393,16 +563,37 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
       form.reset();
       statusMessage.textContent = "Resposta registrada. Obrigado!";
+
+      if (currentStage === 3 && Number(selected.value) >= 9) {
+        const funnel = readFunnel();
+        funnel.recommendation += 1;
+        saveFunnel(funnel);
+        currentStage = 4;
+        sessionStorage.setItem(VISIT_STAGE_KEY, String(currentStage));
+        renderJourney();
+      }
+
       renderResults();
+      renderFunnel();
     });
 
     document.querySelector("#clear-button").addEventListener("click", () => {
       localStorage.removeItem(STORAGE_KEY);
-      statusMessage.textContent = "Respostas removidas.";
+      localStorage.removeItem(FUNNEL_STORAGE_KEY);
+      currentStage = 0;
+      sessionStorage.setItem(VISIT_STAGE_KEY, String(currentStage));
+      const funnel = readFunnel();
+      funnel.acquisition = 1;
+      saveFunnel(funnel);
+      statusMessage.textContent = "Dados removidos. A visita atual continua como aquisição.";
+      renderJourney();
       renderResults();
+      renderFunnel();
     });
 
     renderResults();
+    renderJourney();
+    renderFunnel();
   </script>
   <style>
     .visually-hidden {
