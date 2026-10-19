@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f5ef">
+  <title>Estante | Pesquisa de recomendação</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20291f;
+      --muted: #5b665a;
+      --paper: #f4f5ef;
+      --surface: #fffefa;
+      --line: #d9ded2;
+      --green: #285c43;
+      --green-dark: #1d4633;
+      --lime: #d8ef8b;
+      --orange: #c95836;
+      --gold: #e8b34f;
+      --shadow: 0 18px 48px rgb(32 41 31 / 9%);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#d9ded2 0.7px, transparent 0.7px);
+      background-size: 18px 18px;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(100% - 40px, 1020px);
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+      font-family: Arial, sans-serif;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green-dark);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--lime);
+      font-size: 18px;
+    }
+
+    .class-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(290px, 0.85fr);
+      gap: 24px;
+      padding-top: 36px;
+      animation: arrive 500ms ease-out both;
+    }
+
+    .intro {
+      position: relative;
+      overflow: hidden;
+      min-height: 340px;
+      padding: clamp(28px, 5vw, 52px);
+      border-radius: 8px;
+      background: var(--green);
+      color: #fffefa;
+      box-shadow: var(--shadow);
+    }
+
+    .intro::after {
+      position: absolute;
+      right: -45px;
+      bottom: -72px;
+      width: 220px;
+      height: 220px;
+      border: 1px solid rgb(255 254 250 / 25%);
+      border-radius: 50%;
+      box-shadow: 0 0 0 22px rgb(255 254 250 / 5%), 0 0 0 44px rgb(255 254 250 / 5%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 22px;
+      color: var(--lime);
+      font: 700 12px/1.4 Arial, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 560px;
+      margin: 0;
+      font-size: clamp(38px, 5vw, 62px);
+      font-weight: 400;
+      line-height: 0.98;
+    }
+
+    .description {
+      max-width: 420px;
+      margin: 24px 0 0;
+      color: #e2eade;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .survey, .results {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .survey {
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .survey h2, .results h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .survey-copy {
+      margin: 10px 0 20px;
+      color: var(--muted);
+      font: 14px/1.5 Arial, sans-serif;
+    }
+
+    .rating-list {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .rating-option { position: relative; }
+    .rating-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .rating-option label {
+      display: grid;
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font: 700 15px Arial, sans-serif;
+      transition: background 120ms ease, color 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .rating-option label:hover { transform: translateY(-2px); border-color: var(--green); }
+    .rating-option input:checked + label { border-color: var(--green); background: var(--green); color: white; }
+    .rating-option input:focus-visible + label { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+    .rating-hints {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font: 11px Arial, sans-serif;
+    }
+
+    .submit-button {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 21px;
+      border: 0;
+      border-radius: 5px;
+      background: var(--orange);
+      color: white;
+      cursor: pointer;
+      font: 700 14px Arial, sans-serif;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+
+    .submit-button:hover { transform: translateY(-1px); background: #a94327; }
+    .submit-button:focus-visible, .clear-button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+    .results {
+      grid-column: 1 / -1;
+      padding: 24px 28px 26px;
+    }
+
+    .results-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .total-count { color: var(--muted); font: 13px Arial, sans-serif; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      padding-top: 20px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 16px;
+      border-left: 3px solid var(--line);
+      background: #f8f8f2;
+    }
+
+    .metric.promoters { border-color: var(--green); }
+    .metric.neutrals { border-color: var(--gold); }
+    .metric.detractors { border-color: var(--orange); }
+    .metric.nps { border-color: #496987; }
+
+    .metric-label {
+      display: block;
+      color: var(--muted);
+      font: 12px Arial, sans-serif;
+    }
+
+    .metric-value {
+      display: block;
+      margin-top: 10px;
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .metric.nps .metric-value { font-size: 32px; }
+    .status-message { min-height: 18px; margin: 14px 0 0; color: var(--green-dark); font: 13px Arial, sans-serif; }
+
+    .results-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .formula { margin: 0; color: var(--muted); font: 12px Arial, sans-serif; }
+    .clear-button { padding: 6px 0; border: 0; background: transparent; color: var(--orange); cursor: pointer; font: 700 12px Arial, sans-serif; }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 28px, 560px); padding-top: 20px; }
+      main { grid-template-columns: 1fr; gap: 14px; padding-top: 20px; }
+      .intro { min-height: 0; padding: 30px 26px; }
+      h1 { font-size: 46px; }
+      .description { margin-top: 16px; font-size: 15px; }
+      .survey { padding: 24px; }
+      .results { grid-column: auto; padding: 22px 20px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric { min-height: 96px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">↗</span> Estante</div>
+      <span class="class-label">Pesquisa de recomendação</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="app-title">
+        <p class="eyebrow">Troca de livros</p>
+        <h1 id="app-title">Uma boa história merece circular.</h1>
+        <p class="description">Encontre leitores por perto, troque livros que já leu e descubra sua próxima história favorita.</p>
+      </section>
+
+      <section class="survey" aria-labelledby="survey-title">
+        <h2 id="survey-title">De 0 a 10, quanto você recomendaria este app para um amigo?</h2>
+        <p class="survey-copy">Sua nota ajuda a entender como a comunidade está se sentindo.</p>
+        <form id="survey-form">
+          <fieldset class="rating-list" aria-label="Escolha uma nota de zero a dez" required>
+            <legend class="visually-hidden">Sua nota</legend>
+          </fieldset>
+          <div class="rating-hints" aria-hidden="true"><span>Nem um pouco</span><span>Com certeza</span></div>
+          <button class="submit-button" type="submit">Registrar resposta</button>
+        </form>
+        <p class="status-message" id="status-message" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="results" aria-labelledby="results-title">
+        <div class="results-heading">
+          <h2 id="results-title">Resultado da turma</h2>
+          <span class="total-count" id="total-count">0 respostas</span>
+        </div>
+        <div class="metrics" aria-live="polite">
+          <div class="metric promoters"><span class="metric-label">Promotores · notas 9 e 10</span><strong class="metric-value" id="promoters">0</strong></div>
+          <div class="metric neutrals"><span class="metric-label">Neutros · notas 7 e 8</span><strong class="metric-value" id="neutrals">0</strong></div>
+          <div class="metric detractors"><span class="metric-label">Detratores · notas 0 a 6</span><strong class="metric-value" id="detractors">0</strong></div>
+          <div class="metric nps"><span class="metric-label">NPS final</span><strong class="metric-value" id="nps">—</strong></div>
+        </div>
+        <div class="results-footer">
+          <p class="formula">NPS = % de promotores − % de detratores</p>
+          <button class="clear-button" id="clear-button" type="button">Limpar respostas</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "estante-nps-respostas";
+    const form = document.querySelector("#survey-form");
+    const ratingList = document.querySelector(".rating-list");
+    const statusMessage = document.querySelector("#status-message");
+
+    for (let score = 0; score <= 10; score += 1) {
+      const option = document.createElement("div");
+      option.className = "rating-option";
+      option.innerHTML = `<input id="score-${score}" name="score" type="radio" value="${score}" required><label for="score-${score}">${score}</label>`;
+      ratingList.append(option);
+    }
+
+    function readResponses() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved) ? saved.filter((score) => Number.isInteger(score) && score >= 0 && score <= 10) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderResults() {
+      const responses = readResponses();
+      const promoters = responses.filter((score) => score >= 9).length;
+      const neutrals = responses.filter((score) => score >= 7 && score <= 8).length;
+      const detractors = responses.filter((score) => score <= 6).length;
+      const nps = responses.length
+        ? Math.round((promoters / responses.length) * 100 - (detractors / responses.length) * 100)
+        : "—";
+
+      document.querySelector("#promoters").textContent = promoters;
+      document.querySelector("#neutrals").textContent = neutrals;
+      document.querySelector("#detractors").textContent = detractors;
+      document.querySelector("#nps").textContent = nps;
+      document.querySelector("#total-count").textContent = `${responses.length} ${responses.length === 1 ? "resposta" : "respostas"}`;
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const selected = form.querySelector('input[name="score"]:checked');
+      if (!selected) return;
+
+      const responses = readResponses();
+      responses.push(Number(selected.value));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+      form.reset();
+      statusMessage.textContent = "Resposta registrada. Obrigado!";
+      renderResults();
+    });
+
+    document.querySelector("#clear-button").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      statusMessage.textContent = "Respostas removidas.";
+      renderResults();
+    });
+
+    renderResults();
+  </script>
+  <style>
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+  </style>
+</body>
+</html>
