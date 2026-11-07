@@ -1,0 +1,23 @@
+info:
+  name: pedido com valor invalido
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/pedidos
+  body:
+    type: json
+    data: |-
+      {
+          "cliente": "Diego",
+          "bebida": "Espresso",
+          "valor": "Dez"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

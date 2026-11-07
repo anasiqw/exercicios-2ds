@@ -1,0 +1,15 @@
+info:
+  name: buscar pedido por id
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:3000/pedidos/2
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
